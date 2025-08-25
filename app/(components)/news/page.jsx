@@ -51,7 +51,7 @@ const fetchApi = async () => {
           <Link href={`/news/${article.id}`} key={article.id} className="bg-white rounded-xl shadow-md flex flex-col md:flex-row overflow-hidden hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-green-400 group text-left cursor-pointer">
             <div className="relative w-full md:w-40 h-48 md:h-auto flex-shrink-0">
               <Image
-                src={article.srcUrl || null}
+                src={article.imgUrl}
                 alt={article.title}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform"

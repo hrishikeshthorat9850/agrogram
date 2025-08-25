@@ -50,16 +50,6 @@ const products = [
 ];
 
 export default function AgriMarket() {
-  // const { user, loading } = useLogin();
-
-  // if (loading) return <p className="text-center mt-10">Loading...</p>;
-  // if (!user)
-  //   return (
-  //     <p className="text-center mt-10 text-red-600 font-semibold">
-  //       Please log in to view this page.
-  //     </p>
-  //   );
-
   return (
     <section className="w-full max-w-5xl mx-auto my-10 p-6 bg-white rounded-2xl shadow-lg ml-[250]">
       <h2 className="text-2xl md:text-3xl font-bold text-green-800 mb-6 text-center tracking-tight">

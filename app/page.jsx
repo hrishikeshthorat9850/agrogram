@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { FaSearch, FaRegHeart, FaRegComment } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "./(components)/search/page";
 import PostCreation from "./(components)/postcreation/page";
 import PostCard from "./(components)/post/page";
@@ -23,88 +23,59 @@ import { useLogin } from "./(context)/logincontext";
 import Login from "./(components)/(authentication)/login/page";
 import ThemeToggler from "./(components)/(utils)/ThemeToggler";
 import UserBox from "./User/UserBox";
+import { supabase } from "./lib/supabaseClient";
 // Sample data for posts, comments, user info, suggestions
-const userNames = [
-  "Farmer John", "Farmer Priya", "Farmer Chen", "Farmer Maria", "Farmer Ahmed", "Farmer Elena", "Farmer Luis", "Farmer Grace", "Farmer Ivan", "Farmer Amina"
-];
-const captions = [
-  "Harvested fresh corn today! 🌽 #farmerslife",
-  "Our cows are loving the green fields this season! 🐄💚",
-  "Planted new rice paddies today. Excited for the yield! 🌾",
-  "Sunset over the fields is always magical. 🌅",
-  "Just finished sowing wheat seeds. Fingers crossed! 🌱",
-  "The tractor broke down, but we fixed it together! 🚜",
-  "Rainy days make for happy crops. ☔🌾",
-  "Early morning harvest with the team. Grateful! 🙏",
-  "Trying out organic fertilizers this season. 🌿",
-  "Farm dog keeping watch as always. 🐕"
-];
-const unsplashImages = [
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1468421870903-4df1664ac249?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=600&q=80"
-];
 
-const samplePosts = Array.from({ length: 100 }, (_, i) => {
-  const userIdx = i % userNames.length;
-  const captionIdx = i % captions.length;
-  const imageIdx = i % unsplashImages.length;
-  const gender = userIdx % 2 === 0 ? "men" : "women";
-  const avatarNum = (i % 99) + 1;
-  return {
-    id: i + 1,
-    user: userNames[userIdx],
-    avatar: `https://randomuser.me/api/portraits/${gender}/${avatarNum}.jpg`,
-    image: unsplashImages[imageIdx],
-    text: captions[captionIdx],
-  };
-});
 
-const sampleComments = [
-  { user: "Farmer Alex", text: "Great harvest! 🌾" },
-  { user: "Farmer Priya", text: "Looks amazing!" },
-  { user: "Farmer Chen", text: "Keep it up!" },
-  { user: "Farmer Maria", text: "Beautiful field!" },
-  { user: "Farmer Ahmed", text: "Inspiring work!" },
-  { user: "Farmer Elena", text: "Love this!" },
-  { user: "Farmer Luis", text: "So green!" },
-  { user: "Farmer Grace", text: "Congrats!" },
-  { user: "Farmer Ivan", text: "Nice job!" },
-  { user: "Farmer Amina", text: "Wonderful!" },
-];
 
-const userInfo = {
-  name: "Farmer John",
-  avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-  bio: "Corn & wheat farmer | Nature lover 🌱",
-};
 
-const onLogout = () => {
-  console.log("User Logs Out");
-};
 
-const suggestions = [
-  { name: "Farmer Priya", avatar: "https://randomuser.me/api/portraits/women/44.jpg" },
-  { name: "Farmer Chen", avatar: "https://randomuser.me/api/portraits/men/65.jpg" },
-  { name: "Farmer Maria", avatar: "https://randomuser.me/api/portraits/women/68.jpg" },
-  { name: "Farmer Ahmed", avatar: "https://randomuser.me/api/portraits/men/12.jpg" },
-];
+
+
+
+
+
 
 export default function Home() {
-  const { view, selectedNewsId } = useView();
-  const { theme, toggleTheme } = useTheme();
+  const [posts,setPosts] = useState([]);
+  const [userInfo,setuserInfo] = useState({});
+  useEffect(()=>{
+    const getPosts = async()=>{
+    const { data, error } = await supabase
+      .from("posts")
+      .select(`
+        *,
+        userinfo (
+          id,
+          "firstName",
+          "lastName",
+          profile_url
+        ),
+        post_comments (
+          *
+        ),
+        post_likes(
+          *
+        )
+      `);
+
+      if(error){
+        console.log("Error for getting data from Posts table is ",error)
+      }else{
+        console.log("Data for posts table is :",data)
+        setPosts(data);
+        data.map((data)=>(setuserInfo(data.userinfo)));
+      }
+    }
+    getPosts();
+  },[]);
+    
+  console.log("Posts in state Variable Posts" ,posts);
+  console.log("UserInfo state variable :",userInfo);
   const { user } = useLogin();
-  console.log(user);
+  console.log("User is :",user);
 
   // Debug log
-  console.log('Home render: view =', view, 'selectedNewsId =', selectedNewsId);
   return (
     <div className="min-h-screen bg-green-50 flex font-sans overflow-x-hidden">
       {/* Navbar is now in layout, pass setView to handle nav clicks */}
@@ -130,27 +101,25 @@ export default function Home() {
               </Link>
             </div>
             : null}
-            {view === "posts" && <>
               <SearchBar />
               <PostCreation />
               <div className="w-full max-w-xl flex flex-col">
-                {samplePosts.map((post, idx) => (
+                {posts.map((post, idx) => (
                   <PostCard
                     key={post.id}
                     post={post}
-                    comment={sampleComments[idx % sampleComments.length]}
+                    comment={post.post_comments}
                     idx={idx}
                   />
                 ))}
               </div>
-            </>}
-            {view === "market" && <AgriMarket />}
-            {view === "schemes" && <GovernmentSchemes />}
-            {view === "weather" && <WeatherForecast />}
-            {view === "news" && <News />}
-            {view === "news-full" && <NewsFullPage newsId={selectedNewsId} />}
-            {view === "milk-rate" && <MilkRateCalculator />}
-            {view === "reels" && <Reels />}
+            {/* <AgriMarket /> */}
+            {/* <GovernmentSchemes /> */}
+            {/* <WeatherForecast /> */}
+            {/* <News /> */}
+            {/* <NewsFullPage newsId={selectedNewsId} /> */}
+            {/* <MilkRateCalculator /> */}
+            {/* <Reels /> */}
           </div>
           {user ?
           <UserSidebar /> : <Login/>
@@ -165,3 +134,19 @@ export default function Home() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
