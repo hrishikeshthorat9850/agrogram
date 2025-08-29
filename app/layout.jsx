@@ -1,11 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "./(components)/Navbar";
-import { ViewProvider } from "./ViewContext";
-import { LoginProvider } from "./(context)/logincontext";
-import { ThemeProvider } from "./(context)/themecontext";
-import { AdminProvider } from "./(context)/admincontext";
-
+import Navbar from "../components/Navbar";
+import { LoginProvider } from "../Context/logincontext";
+import { ThemeProvider } from "../Context/themecontext";
+import { AdminProvider } from "../Context/admincontext";
+import { ViewProvider } from "@/Context/ViewContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,16 +28,16 @@ export default function RootLayout({ children }) {
       > 
         <ThemeProvider>
         <LoginProvider>
-          <AdminProvider>
-            <ViewProvider>
+        <AdminProvider>
+        <ViewProvider>
               <div className="w-full max-w-full overflow-x-hidden">
                 <Navbar />
                 <div className="flex-1 flex flex-col w-full min-h-screen pt-16 md:pt-0">
                   {children}
                 </div>
               </div>
-            </ViewProvider>
-          </AdminProvider>
+        </ViewProvider>
+        </AdminProvider>
         </LoginProvider>
         </ThemeProvider>
       </body>
