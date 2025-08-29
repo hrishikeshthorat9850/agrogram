@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-
 export async function GET(){
     try{
-        const apiUrl = "https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=38cfe7fceb6540bf95cf4b05401503b6";
+        const apiUrl = `${process.env.NEWS_API_URL}sources=${process.env.NEWS_SOURCES}&apikey=${process.env.NEWS_API_KEY}`;
+        console.log("API URL IS :",apiUrl);
         const response = await fetch(apiUrl);
 
         if(!response.ok){
-            NextResponse({message : "Failed to fetch News from API", status : 500});
+            return NextResponse({message : "Failed to fetch News from API", status : 500});
         }
         const data = await response.json();
 
@@ -25,7 +25,7 @@ export async function GET(){
                 imgUrl: article.urlToImage,
                 srcUrl: article.url,
         }));
-
+        console.log(articles);
         return NextResponse.json({articles});
     }catch(e){
         console.log("Error is :",e);
